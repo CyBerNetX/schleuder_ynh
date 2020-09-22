@@ -9,6 +9,11 @@ echo "install schleuder"
 
  apt install schleuder
 
+====
+pkg_dependencies="sqlite3 haveged schleuder schleuder-cli zlibc zlib1g libxml2 libxml2-dev zlib1g-dev ruby ruby-dev git gcc g++ make libsqlite3-dev"
+
+
+
 echo "register schleuder tls fingerprint"
 
  schleuder_tls_fingerprint_tmp=$(su schleuder -s /bin/bash -c "/usr/bin/schleuder cert fingerprint" | awk '{print $4}')
@@ -16,8 +21,8 @@ echo "register schleuder tls fingerprint"
 echo "generate new schleuder api key "
 
  schleuder_cli_install_api_key=$(su schleuder -s /bin/bash -c ' /usr/bin/schleuder new_api_key')
+====
 
-echo "verif schleuder-cli exist"
 
 echo "ensure schleuder.yml is latest"
 
@@ -54,7 +59,7 @@ echo "install schleuder-cli"
 
 echo "ensure /root/.schleuder-cli/ is present"
 
- if [-n /root/.schleuder-cli/ ] then
+ if [ -d /root/.schleuder-cli/ ] then
    chown root:schleuder /root/.schleuder-cli/
    chmod 0600 /root/.schleuder-cli/
  fi
@@ -94,14 +99,14 @@ if -d /var/www/schleuder-web/.gnupg
 if exist /var/www/schleuder-web/.gnupg/pubring.gpg
  chown schleuder:schleuder /var/www/schleuder-web/.gnupg/pubring.gpg
  chmod 0600  /var/www/schleuder-web/.gnupg/pubring.gpg
+====
+if [[ -d /var/www/schleuder-web/schleuder-web/ ]]
 
-if exist /var/www/schleuder-web/schleuder-web/
+if [[ -f /var/www/schleuder-web/config/database.yml ]]
 
-if exist /var/www/schleuder-web/config/database.yml
-if exist /var/www/schleuder-web/config/schleuder-web.yml
+if [[ -f /var/www/schleuder-web/config/schleuder-web.yml ]]
 
-
-if exist /var/www/schleuder-web/config
+if [[ -d exist /var/www/schleuder-web/config ]] then
 chown schleuder-web:schleuder-web /var/www/schleuder-web/config/
 chmod 0700  /var/www/schleuder-web/config/
 

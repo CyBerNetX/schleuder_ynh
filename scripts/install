@@ -113,6 +113,9 @@ ynh_script_progression --message="Installing dependencies..." --time --weight=1
 
 ynh_install_app_dependencies $pkg_dependencies
 
+schleuder_tls_fingerprint=$(su schleuder -s /bin/bash -c "/usr/bin/schleuder cert fingerprint" | awk '{print $4}')
+
+schleuder_cli_install_api_key=$(su schleuder -s /bin/bash -c ' /usr/bin/schleuder new_api_key')
 #=================================================
 # CREATE A MYSQL DATABASE
 #=================================================
@@ -144,6 +147,31 @@ ynh_script_progression --message="Setting up source files..." --time --weight=1
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$final_path"
+
+### a mettre dans une fonction dans common.sh ###
+#schleuder-cli#
+if [[ -d /home/admin/.schleuder-cli/ ]] 
+then
+  chown admin:schleuder /home/admin/.schleuder-cli/
+  chmod 0600 /home/admin/.schleuder-cli/
+fi
+
+#schleuder-web#
+if [[ -z $(id schleuder-web) ]]
+then
+  adduser --home  $final_path --shell  /bin/false  --disabled-password --disabled-login schleuder-web
+fi
+if [[ -d $final_path/.gnupg ]] 
+then
+  chown schleuder:schleuder $final_path/.gnupg
+  chmod 0700 $final_path/.gnupg
+fi
+if [[ -f $final_path/.gnupg/pubring.gpg ]] 
+then
+  chown schleuder:schleuder $final_path/.gnupg/pubring.gpg
+  chmod 0600  $final_path/.gnupg/pubring.gpg
+fi
+### fin function ###
 
 #=================================================
 # NGINX CONFIGURATION
