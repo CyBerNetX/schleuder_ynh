@@ -1,0 +1,4 @@
+host: @SCHLEUDER_CLI_HOST@
+port: @SCHLEUDER_CLI_PORT@
+tls_fingerprint: @SCHLEUDER_TLS_FINGERPRINT@
+api_key: @SCHLEUDER_API_KEY@ 

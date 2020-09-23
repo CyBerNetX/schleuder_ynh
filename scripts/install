@@ -113,9 +113,6 @@ ynh_script_progression --message="Installing dependencies..." --time --weight=1
 
 ynh_install_app_dependencies $pkg_dependencies
 
-schleuder_tls_fingerprint=$(su schleuder -s /bin/bash -c "/usr/bin/schleuder cert fingerprint" | awk '{print $4}')
-
-schleuder_cli_install_api_key=$(su schleuder -s /bin/bash -c ' /usr/bin/schleuder new_api_key')
 #=================================================
 # CREATE A MYSQL DATABASE
 #=================================================
@@ -149,6 +146,15 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 ynh_setup_source --dest_dir="$final_path"
 
 ### a mettre dans une fonction dans common.sh ###
+#schleuder#
+
+
+schleuder_tls_fingerprint=$(su schleuder -s /bin/bash -c "/usr/bin/schleuder cert fingerprint" | awk '{print $4}')
+
+schleuder_cli_install_api_key=$(su schleuder -s /bin/bash -c ' /usr/bin/schleuder new_api_key')
+
+
+
 #schleuder-cli#
 if [[ -d /home/admin/.schleuder-cli/ ]] 
 then
@@ -274,6 +280,23 @@ fi
 ### (It's compatible with sed regular expressions syntax)
 
 ynh_replace_string --match_string="match_string" --replace_string="replace_string" --target_file="$final_path/CONFIG_FILE"
+
+##schleuder
+
+ynh_replace_string  --match_string="@SCHLEUDER_ADMIN@" --replace_string="$admin" --target_file="/etc/schleuder/schleuder.yml"
+
+ynh_replace_string  --match_string="@SCHLEUDER_API_KEY@" --replace_string="$schleuder_cli_install_api_key" --target_file="/etc/schleuder/schleuder.yml"
+
+##schleuder cli
+
+ynh_replace_string  --match_string="@SCHLEUDER_API_HOST@" --replace_string="$schleuder_api_host" --target_file="/home/admin/.schleuder-cli/schleuder-cli.yml"
+
+ynh_replace_string  --match_string="@SCHLEUDER_API_PORT@" --replace_string="$schleuder-api_port" --target_file="/home/admin/.schleuder-cli/schleuder-cli.yml"
+
+ynh_replace_string  --match_string="@SCHLEUDER_TLS_FINGERPRINT@" --replace_string="$schleuder_tls_fingerprint_tmp" --target_file="/home/admin/.schleuder-cli/schleuder-cli.yml"
+
+ynh_replace_string  --match_string="@SCHLEUDER_API_KEY@" --replace_string="$schleuder_cli_install_api_key" --target_file="/home/admin/.schleuder-cli/schleuder-cli.yml"
+
 
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM
