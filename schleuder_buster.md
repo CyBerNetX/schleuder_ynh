@@ -1,3 +1,5 @@
+#!/bin/bash
+
 
 ## install schleuder
 apt update
@@ -29,7 +31,11 @@ echo "ensure schleuder.yml is latest"
  cp schleuder/schleuder.yml.j2 /etc/schleuder/schleuder.yml
  chown root:schleuder /etc/schleuder/schleuder.yml
  chmod 0640  /etc/schleuder/schleuder.yml
+===
+ynh_replace_string  --match_string="SCHLEUDER_TLS_FINGERPRINT" --replace_string="$schleuder_tls_fingerprint_tmp" --target_file="$final_path/CONFIG_FILE"
 
+ynh_replace_string  --match_string="SCHLEUDER_API_KEY" --replace_string="$schleuder_cli_install_api_key" --target_file="$final_path/CONFIG_FILE"
+===
 systemctl restart schleuder-api-daemon
 
 
