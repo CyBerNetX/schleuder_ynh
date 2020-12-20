@@ -11,7 +11,7 @@ schleuder_gpg_use_tor="False"
 schleuder_gpg_tor_keyserver="hkp://zkaan2xfbuxia2wpf7ofnkbz6r5zdbbvxbunvp5g2iebopbfc4iqmbad.onion"
 schleuder_admin_keys_path="/var/lib/schleuder/adminkeys"
 
-schleuder_lists="[]"
+schleuder_lists=("")
 # - name: foobar@cryptolists.systemli.org
 #   admin: admin@systemli.org
 #   # be sure to copy public_key of list admin to
@@ -80,7 +80,7 @@ schleuder_api_port="4443"
 # valid_api_keys:
 #   - abcdef...
 #   - zyxwvu...
-schleuder_valid_api_keys="[]"
+schleuder_valid_api_keys=("")
 
 
 ### schleuder/list-defaults.yml.j2
@@ -90,28 +90,17 @@ schleuder_receive_signed_only="false"
 schleuder_receive_authenticated_only="false"
 schleuder_receive_from_subscribed_emailaddresses_only="true"
 schleuder_receive_admin_only="false"
-schleuder_headers_to_meta:
-  - from
-  - to
-  - cc
-  - date
-  - sig
-  - enc
+schleuder_headers_to_meta=("from" "to" "cc" "date" "sig" "enc")
 schleuder_keep_msgid="true"
-schleuder_keywords_admin_only:
-  - subscribe
-  - unsubscribe
-  - delete-key
-schleuder_keywords_admin_notify:
-  - add-key
+schleuder_keywords_admin_only=("subscribe" "unsubscribe" "delete-key" )
+schleuder_keywords_admin_notify=("add-key")
 schleuder_internal_footer=""
 schleuder_public_footer=""
 schleuder_subject_prefix=""
 schleuder_subject_prefix_in=""
 schleuder_subject_prefix_out=""
 schleuder_bounces_drop_all="false"
-schleuder_bounces_drop_on_headers:
-  x-spam-flag="yes"
+schleuder_bounces_drop_on_headers=([x-spam-flag]="yes" )
 schleuder_bounces_notify_admins="true"
 schleuder_include_list_headers="true"
 schleuder_include_openpgp_header="true"
@@ -135,10 +124,9 @@ schleuder_web_database:
 ### schleuder-web/schleuder-web.yml
 schleuder_web_web_hostname="example.org"
 schleuder_web_mailer_from="noreply@example.org"
-schleuder_web_superadmins:
-  - "{{ schleuder_superadmin }}"
+schleuder_web_superadmins=( "$schleuder_superadmin" )
 
-schleuder_web_version: debian/buster/0.0.3
+schleuder_web_version= "debian/buster/0.0.3"
 
 ### schleuder/gitlab.yml
 # global settings

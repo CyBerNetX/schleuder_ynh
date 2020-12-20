@@ -3,12 +3,12 @@
 echo "install schleuder dependencies"
 __schleuder_dependencies="sqlite3 haveged"
 
-sudo apt install $__schleuder_dependencies
+sudo apt install -y $__schleuder_dependencies
 
 echo "install tor"
 if [[ $schleuder_gpg_use_tor = "True" ]]
 then
-  sudo apt install tor
+  sudo apt install -y tor
 fi
 
 echo  "install schleuder"
