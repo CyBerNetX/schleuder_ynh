@@ -71,6 +71,15 @@
                 },
                 "default": false
             }
+{
+                "name": "use_Tor",
+                "type": "boolean",
+                "ask": {
+                    "en": "Allow schleuder to use Tor ?",
+                    "fr": "Autoriser schleuder à utiliser Tor ?"
+                },
+                "default": false
+            }
         ]
     }
 }
