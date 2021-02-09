@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # source :
 # git clone https://github.com/systemli/ansible-role-schleuder
 
@@ -8,8 +9,7 @@ fonctionSchleuder(){
   #echo "install schleuder dependencies"
   #__schleuder_dependencies="sqlite3 haveged"
 
-  #sudo apt install $__schleuder_dependencies
-  ## remplacé par  $pkg_dependencies dans _common.sh
+  #sudo apt install -y $__schleuder_dependencies
 
   echo "install tor"
   if [[ $schleuder_gpg_use_tor = "True" ]]
@@ -19,6 +19,8 @@ fonctionSchleuder(){
 
   #echo  "install schleuder"
   #__schleuder_packages="schleuder"
+
+  #sudo apt install $__schleuder_packages
 
   #sudo apt install $__schleuder_packages
   ## remplacé par  $pkg_dependencies dans _common.sh
@@ -45,12 +47,6 @@ fonctionSchleuder(){
   fi
 
 
-  for api_key in $schleuder_cli_existing_api_key; do
-   echo "api_key: $api_key" |tee -a $schleuder_cli_path/schleuder-cli.yml
-  done
-  echo "api_key: $schleuder_cli_install_api_key"|tee -a $schleuder_cli_path/schleuder-cli.yml
-
-
 
   if [[ -n /etc/schleuder/schleuder.yml ]]
   then
@@ -60,10 +56,9 @@ fonctionSchleuder(){
     sed -e -i s/@SCHLEUDER_ADMIN@/$schleuder_superadmin/g /etc/schleuder/schleuder.yml
     sed -e -i s/@SCHLEUDER_API_KEY@/$schleuder_cli_install_api_key/g /etc/schleuder/schleuder.yml
     for api_key in $schleuder_cli_existing_api_key; do
-     echo "- $api_key" |tee -a /etc/schleuder/schleuder.yml
+      echo "- $api_key" |tee -a /etc/schleuder/schleuder.yml
     done
     #echo "- $schleuder_cli_install_api_key"|tee -a /etc/schleuder/schleuder.yml
-
   fi
 
   if [[ -n /etc/schleuder/schleuder.yml ]] 
@@ -86,6 +81,7 @@ fonctionSchleuder(){
   then
     chown root:$schleuder_schleuder_user $schleuder_admin_keys_path
     chmod 0640 $schleuder_admin_keys_path
+
   fi
 
   if [[ schleuder_gpg_use_tor="True" ]]
@@ -110,39 +106,49 @@ fonctionSchleuder(){
   fi
 }
 
+
 ######## schleuder-cli ##########
 # https://github.com/systemli/ansible-role-schleuder/blob/master/tasks/schleuder_cli.yml
 
 fonctionSchleuderCli(){
-  if [[ -d $schleuder_cli_path ]]
+
+  if [[ -d $schleuder_admin_keys_path ]]
   then
-    chown root:$schleuder_schleuder_user $schleuder_cli_path
-    chmod 600 $schleuder_cli_path
-  else
-    mkdir $schleuder_cli_path
-    chown root:$schleuder_schleuder_user $schleuder_cli_path
-    chmod 600 $schleuder_cli_path
+    chown root:$schleuder_schleuder_user $schleuder_admin_keys_path
+    chmod 0640 $schleuder_admin_keys_path
   fi
-  
-  if [[ -f $schleuder_cli_path/schleuder-cli.yml ]]
+
+  if [[ schleuder_gpg_use_tor="True" ]]
   then
-    chown root:root $schleuder_cli_path/schleuder-cli.yml
-    chmod 600 $schleuder_cli_path/schleuder-cli.yml
-  else
-    
-    chown root:root $schleuder_cli_path/schleuder-cli.yml
-    chmod 600 $schleuder_cli_path/schleuder-cli.yml
+    apt install tor
+    if [[ -d /var/lib/schleuder/.gnupg ]]
+    then 
+      
+    else
+      chown $schleuder_schleuder_user:$schleuder_schleuder_user /var/lib/schleuder/.gnupg
+      chmod 0700 /var/lib/schleuder/.gnupg
+    fi
+    if [[ -n /var/lib/schleuder/.gnupg/dirmngr.conf ]]
+    then
+      
+    else
+      cp conf/dirmngr.conf.j2 /var/lib/schleuder/.gnupg/dirmngr.conf
+      chown $schleuder_schleuder_user:$schleuder_schleuder_user /var/lib/schleuder/.gnupg/dirmngr.conf
+      chmod 0700 /var/lib/schleuder/.gnupg/dirmngr.conf
+      sed -e -i s/@schleuder_gpg_tor_keyserver@/$schleuder_gpg_tor_keyserver/g /var/lib/schleuder/.gnupg/dirmngr.conf
+    fi
   fi
 
 
-  
   sudo systemctl restart schleuder-api-daemon
 }
+
 
 ######## schleuder-list ##########
 
 
 ######## schleuder-web ##########
+
 # https://github.com/systemli/ansible-role-schleuder/blob/master/tasks/schleuder_web.yml
 
 fonctionSchleuderWeb(){
@@ -216,12 +222,11 @@ fonctionSchleuderWeb(){
     chmod 0640 $schleuder_schleuder_web_path/config/database.yml
   fi
 
+
   gem install bundler
 
-  sudo su $schleuder_schleuder_web_user "/usr/local/bin/bundle install --without development --path $schleuder_schleuder_web_home/.gem"
-
+  /usr/local/bin/bundle install --without development --path $schleuder_schleuder_web_home/.gem
 
   rake secret
 
 }
-
