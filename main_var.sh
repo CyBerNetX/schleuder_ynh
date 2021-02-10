@@ -148,3 +148,43 @@ schleuder_gitlab_lists: []
 #        token: aaaa
 #      sender_filters:
 #        - 'noreply@example\.com'
+
+
+
+########
+#============================================================
+# Common helpers
+#============================================================
+
+
+ynh_read_json () {
+    sudo python3 -c "import sys, json;print(json.load(open('$1'))['$2'])"
+}
+
+ynh_read_manifest () {
+    if [ -f '../manifest.json' ] ; then
+        ynh_read_json '../manifest.json' "$1"
+    else
+        ynh_read_json '../settings/manifest.json' "$1"
+    fi
+}
+
+ynh_configure () {
+    local TEMPLATE=$1
+    local DEST=$2
+    type j2 2>/dev/null || sudo pip install j2cli jinja2
+    j2 "${PKG_DIR}/conf/$TEMPLATE.j2" > "${PKG_DIR}/conf/$TEMPLATE"
+    sudo cp "${PKG_DIR}/conf/$TEMPLATE" "$DEST"
+}
+
+ynh_configure_nginx () {
+    ynh_configure nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
+    sudo service nginx reload
+}
+
+ynh_rm_nginx_conf () {
+    if [ -e "/etc/nginx/conf.d/$domain.d/$app.conf" ]; then
+        sudo rm "/etc/nginx/conf.d/$domain.d/$app.conf"
+        sudo service nginx reload
+    fi
+}

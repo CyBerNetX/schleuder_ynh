@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# varriable in main_var.sh
+
 # source :
 # git clone https://github.com/systemli/ansible-role-schleuder
 
@@ -226,6 +228,12 @@ fonctionSchleuderWeb(){
   gem install bundler
 
   /usr/local/bin/bundle install --without development --path $schleuder_schleuder_web_home/.gem
+
+  if [[ ! -f $schleuder_schleuder_web_systemd_path ]]
+  then
+    cp conf/schleuder-web.service.j2 $schleuder_schleuder_web_systemd_path
+  fi
+
 
   rake secret
 
