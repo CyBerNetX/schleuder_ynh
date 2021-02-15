@@ -9,7 +9,8 @@
 
 fonctionSchleuder(){
   #echo "install schleuder dependencies"
-  #__schleuder_dependencies="sqlite3 haveged"
+  #__schleuder_dependencies="sqlite3 haveged schleuder schleuder-cli zlibc zlib1g libxml2 libxml2-dev zlib1g-dev ruby ruby-dev git gcc g++ make libsqlite3-dev"
+
 
   #sudo apt install -y $__schleuder_dependencies
 
