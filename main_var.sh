@@ -1,17 +1,17 @@
 #!/bin/bash 
 
 ### Define which playbooks should be run:
-schleuder_install_web="True"
-schleuder_install_cli="True"
-schleuder_install_gitlab_ticket_plugin="False"
+export schleuder_install_web="True"
+export schleuder_install_cli="True"
+export schleuder_install_gitlab_ticket_plugin="False"
 
 ### schleuder vars:
-schleuder_schleuder_user="schleuder"
-schleuder_gpg_use_tor="False"
-schleuder_gpg_tor_keyserver="hkp://zkaan2xfbuxia2wpf7ofnkbz6r5zdbbvxbunvp5g2iebopbfc4iqmbad.onion"
-schleuder_admin_keys_path="/var/lib/schleuder/adminkeys"
+export schleuder_schleuder_user="schleuder"
+export schleuder_gpg_use_tor="False"
+export schleuder_gpg_tor_keyserver="hkp://zkaan2xfbuxia2wpf7ofnkbz6r5zdbbvxbunvp5g2iebopbfc4iqmbad.onion"
+export schleuder_admin_keys_path="/var/lib/schleuder/adminkeys"
 
-schleuder_lists=("")
+export schleuder_lists=("")
 # - name: foobar@cryptolists.systemli.org
 #   admin: admin@systemli.org
 #   # be sure to copy public_key of list admin to
@@ -26,117 +26,113 @@ schleuder_lists=("")
 #   schleuder list will be created, but is not functional
 
 ### schleuder-web vars:
-schleuder_schleuder_web_repo="https://0xacab.org/schleuder/schleuder-web"
-schleuder_schleuder_web_home="/var/www/schleuder-web"
-schleuder_schleuder_web_user="schleuder-web"
-schleuder_schleuder_web_path="$schleuder_schleuder_web_home/$schleuder_schleuder_web_user"
-schleuder_schleuder_web_systemd_path="/etc/systemd/system/schleuder-web.service"
-schleuder_schleuder_web_environment_vars_path="/etc/default/schleuder-web"
+export schleuder_schleuder_web_repo="https://0xacab.org/schleuder/schleuder-web"
+export schleuder_schleuder_web_home="/var/www/schleuder-web"
+export schleuder_schleuder_web_user="schleuder-web"
+export schleuder_schleuder_web_path="$schleuder_schleuder_web_home/$schleuder_schleuder_web_user"
+export schleuder_schleuder_web_systemd_path="/etc/systemd/system/schleuder-web.service"
+export schleuder_schleuder_web_environment_vars_path="/etc/default/schleuder-web"
 # set to false will make rails server listen on localhost only
-schleuder_schleuder_web_allow_access_from_outside="True"
+export schleuder_schleuder_web_allow_access_from_outside="True"
 
 ### schleuder-gitlab-ticketing-plugin vars:
-schleuder_gitlab_plugin_path="/opt/local/gitlab-ticketing"
-schleuder_gitlab_plugin_repo="https://0xacab.org/schleuder/schleuder-gitlab-ticketing"
-schleuder_gitlab_plugin_git_update="False"
+export schleuder_gitlab_plugin_path="/opt/local/gitlab-ticketing"
+export schleuder_gitlab_plugin_repo="https://0xacab.org/schleuder/schleuder-gitlab-ticketing"
+export schleuder_gitlab_plugin_git_update="False"
 
 ### schleuder-cli vars:
-schleuder_cli_path="/admin/.schleuder-cli"
+export schleuder_cli_path="/admin/.schleuder-cli"
 
 ###### File Section
 
 ### schleuder/schleuder.yml.j2
-schleuder_lists_dir="/var/lib/schleuder/lists"
-schleuder_listlogs_dir="/var/lib/schleuder/lists"
-schleuder_plugins_dir="/etc/schleuder/plugins"
-schleuder_filters_dir="/usr/local/lib/schleuder/filters"
-schleuder_log_level="warn"
-schleuder_keyserver="hkps://keys.openpgp.org" 
-schleuder_superadmin="admin@localhost"
+export schleuder_lists_dir="/var/lib/schleuder/lists"
+export schleuder_listlogs_dir="/var/lib/schleuder/lists"
+export schleuder_plugins_dir="/etc/schleuder/plugins"
+export schleuder_filters_dir="/usr/local/lib/schleuder/filters"
+export schleuder_log_level="warn"
+export schleuder_keyserver="hkps://keys.openpgp.org" 
+export schleuder_superadmin="admin@$domain"
 #schleuder_smtp_settings:
-  schleuder_smtp_settings_address="localhost"
-  schleuder_smtp_settings_port="25"
+export   schleuder_smtp_settings_address="localhost"
+export   schleuder_smtp_settings_port="25"
   # domain:
   # enable_starttls_auto:
   # openssl_verify_mode:
   # authentication:
   # user_name:
   # password:
-schleuder_database:
-  production:
-    adapter="'sqlite3'"
-    database="var/lib/schleuder/db.sqlite"
-    pool="5"
-    timeout="5000"
+export schleuder_database_production_adapter="'sqlite3'"
+export schleuder_database_production_database="var/lib/schleuder/db.sqlite"
+export schleuder_database_production_pool="5"
+export schleuder_database_production_timeout="5000"
 #schleuder_api:
-schleuder_api_host="localhost"
-schleuder_api_port="4443"
+export schleuder_api_host="localhost"
+export schleuder_api_port="4443"
   # Certificate and key to use. You can create new ones with `schleuder cert generate`.
-  tls_cert_file="/etc/schleuder/schleuder-certificate.pem"
-  tls_key_file="/etc/schleuder/schleuder-private-key.pem"
+export   tls_cert_file="/etc/schleuder/schleuder-certificate.pem"
+export   tls_key_file="/etc/schleuder/schleuder-private-key.pem"
 
 # List of api_keys to allow access to the API.
 # Example:
 # valid_api_keys:
 #   - abcdef...
 #   - zyxwvu...
-schleuder_valid_api_keys=("")
+export schleuder_valid_api_keys=("")
 
 
 ### schleuder/list-defaults.yml.j2
-schleuder_send_encrypted_only="true"
-schleuder_receive_encrypted_only="true"
-schleuder_receive_signed_only="false"
-schleuder_receive_authenticated_only="false"
-schleuder_receive_from_subscribed_emailaddresses_only="true"
-schleuder_receive_admin_only="false"
-schleuder_headers_to_meta=("from" "to" "cc" "date" "sig" "enc")
-schleuder_keep_msgid="true"
-schleuder_keywords_admin_only=("subscribe" "unsubscribe" "delete-key" )
-schleuder_keywords_admin_notify=("add-key")
-schleuder_internal_footer=""
-schleuder_public_footer=""
-schleuder_subject_prefix=""
-schleuder_subject_prefix_in=""
-schleuder_subject_prefix_out=""
-schleuder_bounces_drop_all="false"
-schleuder_bounces_drop_on_headers=([x-spam-flag]="yes" )
-schleuder_bounces_notify_admins="true"
-schleuder_include_list_headers="true"
-schleuder_include_openpgp_header="true"
-schleuder_openpgp_header_preference="signencrypt"
-schleuder_max_message_size_kb="10240"
-schleuder_lists_log_level="warn"
-schleuder_logfiles_to_keep="2"
+export schleuder_send_encrypted_only="true"
+export schleuder_receive_encrypted_only="true"
+export schleuder_receive_signed_only="false"
+export schleuder_receive_authenticated_only="false"
+export schleuder_receive_from_subscribed_emailaddresses_only="true"
+export schleuder_receive_admin_only="false"
+export schleuder_headers_to_meta=("from" "to" "cc" "date" "sig" "enc")
+export schleuder_keep_msgid="true"
+export schleuder_keywords_admin_only=("subscribe" "unsubscribe" "delete-key" )
+export chleuder_keywords_admin_notify=("add-key")
+export schleuder_internal_footer=""
+export schleuder_public_footer=""
+export schleuder_subject_prefix=""
+export schleuder_subject_prefix_in=""
+export schleuder_subject_prefix_out=""
+export schleuder_bounces_drop_all="false"
+export schleuder_bounces_drop_on_headers=([x-spam-flag]="yes" )
+export schleuder_bounces_notify_admins="true"
+export schleuder_include_list_headers="true"
+export schleuder_include_openpgp_header="true"
+export schleuder_openpgp_header_preference="signencrypt"
+export schleuder_max_message_size_kb="10240"
+export schleuder_lists_log_level="warn"
+export schleuder_logfiles_to_keep="2"
 # Available: en, de.
-schleuder_language="en"
-schleuder_forward_all_incoming_to_admins="false"
+export schleuder_language="en"
+export schleuder_forward_all_incoming_to_admins="false"
 
 ### schleuder-web/database.yml
 # schleuder-web uses it's own database to store user credentials
-schleuder_web_database:
-  production:
-    adapter="'sqlite3'"
-    database="db/production.sqlite"
-    pool="5"
-    timeout="5000"
+export schleuder_web_database_production_adapter="'sqlite3'"
+export schleuder_web_database_production_database="db/production.sqlite"
+export schleuder_web_database_production_pool="5"
+export schleuder_web_database_production_timeout="5000"
 
 ### schleuder-web/schleuder-web.yml
-schleuder_web_web_hostname="example.org"
-schleuder_web_mailer_from="noreply@example.org"
-schleuder_web_superadmins=( "$schleuder_superadmin" )
+export schleuder_web_web_hostname="$domain"
+export schleuder_web_mailer_from="noreply@example.org"
+export schleuder_web_superadmins=( "$schleuder_superadmin" )
 
-schleuder_web_version= "debian/buster/0.0.3"
+export schleuder_web_version= "debian/buster/0.0.3"
 
 ### schleuder/gitlab.yml
 # global settings
-schleuder_gitlab_default_subject_filters: []
-schleuder_gitlab_default_sender_filters: []
-schleuder_gitlab_default_gitlab_connection: {}
+#schleuder_gitlab_default_subject_filters: []
+#schleuder_gitlab_default_sender_filters: []
+#schleuder_gitlab_default_gitlab_connection: {}
 
 # settings per list
 # see https://0xacab.org/schleuder/schleuder-gitlab-ticketing
-schleuder_gitlab_lists: []
+#schleuder_gitlab_lists: []
 #  - test@schleuder.example.com:
 #      project: tickets
 #      namespace: support
@@ -156,35 +152,3 @@ schleuder_gitlab_lists: []
 # Common helpers
 #============================================================
 
-
-ynh_read_json () {
-    sudo python3 -c "import sys, json;print(json.load(open('$1'))['$2'])"
-}
-
-ynh_read_manifest () {
-    if [ -f '../manifest.json' ] ; then
-        ynh_read_json '../manifest.json' "$1"
-    else
-        ynh_read_json '../settings/manifest.json' "$1"
-    fi
-}
-
-ynh_configure () {
-    local TEMPLATE=$1
-    local DEST=$2
-    type j2 2>/dev/null || sudo pip install j2cli jinja2
-    j2 "${PKG_DIR}/conf/$TEMPLATE.j2" > "${PKG_DIR}/conf/$TEMPLATE"
-    sudo cp "${PKG_DIR}/conf/$TEMPLATE" "$DEST"
-}
-
-ynh_configure_nginx () {
-    ynh_configure nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
-    sudo service nginx reload
-}
-
-ynh_rm_nginx_conf () {
-    if [ -e "/etc/nginx/conf.d/$domain.d/$app.conf" ]; then
-        sudo rm "/etc/nginx/conf.d/$domain.d/$app.conf"
-        sudo service nginx reload
-    fi
-}

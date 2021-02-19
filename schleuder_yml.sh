@@ -55,9 +55,9 @@ fonctionSchleuder(){
   then
 
   else
-    cp conf/schleuder.yml.j2 /etc/schleuder/schleuder.yml
-    sed -e -i s/@SCHLEUDER_ADMIN@/$schleuder_superadmin/g /etc/schleuder/schleuder.yml
-    sed -e -i s/@SCHLEUDER_API_KEY@/$schleuder_cli_install_api_key/g /etc/schleuder/schleuder.yml
+    
+    ynh_render_template ../conf/schleuder.yml.j2 /etc/schleuder/schleuder.yml
+    
     for api_key in $schleuder_cli_existing_api_key; do
       echo "- $api_key" |tee -a /etc/schleuder/schleuder.yml
     done
@@ -70,11 +70,11 @@ fonctionSchleuder(){
     chmod 0640 /etc/schleuder/schleuder.yml
   fi
 
-  if [[ -n /etc/schleuder/schleuder.yml ]]
+  if [[ -n /etc/schleuder/list-defaults.yml ]]
   then
 
   else
-    cp conf/list-defaults.yml /etc/schleuder/list-defaults.yml
+    ynh_render_template ../conf/list-defaults.yml.j2 /etc/schleuder/list-defaults.yml
     chown root:$schleuder_schleuder_user /etc/schleuder/list-defaults.yml
     chmod 0640 /etc/schleuder/list-defaults.yml
   fi
@@ -101,10 +101,9 @@ fonctionSchleuder(){
     then
       
     else
-      cp conf/dirmngr.conf.j2 /var/lib/schleuder/.gnupg/dirmngr.conf
+      ynh_render_template  ../conf/dirmngr.conf.j2 /var/lib/schleuder/.gnupg/dirmngr.conf
       chown $schleuder_schleuder_user:$schleuder_schleuder_user /var/lib/schleuder/.gnupg/dirmngr.conf
       chmod 0700 /var/lib/schleuder/.gnupg/dirmngr.conf
-      sed -e -i s/@schleuder_gpg_tor_keyserver@/$schleuder_gpg_tor_keyserver/g /var/lib/schleuder/.gnupg/dirmngr.conf
     fi
   fi
 }
@@ -135,10 +134,9 @@ fonctionSchleuderCli(){
     then
       
     else
-      cp conf/dirmngr.conf.j2 /var/lib/schleuder/.gnupg/dirmngr.conf
+      ynh_render_template  ../conf/dirmngr.conf.j2 /var/lib/schleuder/.gnupg/dirmngr.conf
       chown $schleuder_schleuder_user:$schleuder_schleuder_user /var/lib/schleuder/.gnupg/dirmngr.conf
       chmod 0700 /var/lib/schleuder/.gnupg/dirmngr.conf
-      sed -e -i s/@schleuder_gpg_tor_keyserver@/$schleuder_gpg_tor_keyserver/g /var/lib/schleuder/.gnupg/dirmngr.conf
     fi
   fi
 
@@ -213,14 +211,14 @@ fonctionSchleuderWeb(){
 
   if [[ ! -f $schleuder_schleuder_web_path/config/schleuder-web.yml ]]
   then
-    cp conf/schleuder-web.yml.j2 $schleuder_schleuder_web_path/config/schleuder-web.yml
+    ynh_render_template  ../conf/schleuder-web.yml.j2 $schleuder_schleuder_web_path/config/schleuder-web.yml
     chown $schleuder_schleuder_web_user:$schleuder_schleuder_web_user $schleuder_schleuder_web_path/config/schleuder-web.yml
     chmod 0640 $schleuder_schleuder_web_path/config/schleuder-web.yml
   fi
 
   if [[ ! -f $schleuder_schleuder_web_path/config/database.yml ]]
   then
-    cp conf/database.yml.j2 $schleuder_schleuder_web_path/config/database.yml
+    ynh_render_template  ../conf/database.yml.j2 $schleuder_schleuder_web_path/config/database.yml
     chown $schleuder_schleuder_web_user:$schleuder_schleuder_web_user $schleuder_schleuder_web_path/config/database.yml
     chmod 0640 $schleuder_schleuder_web_path/config/database.yml
   fi
