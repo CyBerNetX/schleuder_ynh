@@ -35,7 +35,7 @@
                 "example": "example.com"
             },
             {
-                "name": "path",
+                "name": "path_url",
                 "type": "path",
                 "ask": {
                     "en": "Choose a path for schleuder",
@@ -51,7 +51,7 @@
                     "en": "Choose an admin user",
                     "fr": "Choisissez l’administrateur"
                 },
-                "example": "johndoe"
+                "example": "admin@localhost"
             },
             {
                 "name": "is_public",
@@ -61,15 +61,6 @@
                     "fr": "Est-ce une application publique ?"
                 },
                 "default": true
-            },
-            {
-                "name": "use_web_account",
-                "type": "boolean",
-                "ask": {
-                    "en": "Allow account creation via the schleuder web interface?",
-                    "fr": "Autoriser la création de compte via l'interface web de schleuder ?"
-                },
-                "default": false
             }
 {
                 "name": "use_Tor",

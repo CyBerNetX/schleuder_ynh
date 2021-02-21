@@ -19,7 +19,7 @@ export schleuder_gpg_use_tor="False"
 export schleuder_gpg_tor_keyserver="hkp://zkaan2xfbuxia2wpf7ofnkbz6r5zdbbvxbunvp5g2iebopbfc4iqmbad.onion"
 export schleuder_admin_keys_path="/var/lib/schleuder/adminkeys"
 
-export schleuder_lists=("")
+#export schleuder_lists=("")
 # - name: foobar@cryptolists.systemli.org
 #   admin: admin@systemli.org
 #   # be sure to copy public_key of list admin to
@@ -99,7 +99,7 @@ export schleuder_receive_admin_only="false"
 export schleuder_headers_to_meta=("from" "to" "cc" "date" "sig" "enc")
 export schleuder_keep_msgid="true"
 export schleuder_keywords_admin_only=("subscribe" "unsubscribe" "delete-key" )
-export chleuder_keywords_admin_notify=("add-key")
+export schleuder_keywords_admin_notify=("add-key")
 export schleuder_internal_footer=""
 export schleuder_public_footer=""
 export schleuder_subject_prefix=""

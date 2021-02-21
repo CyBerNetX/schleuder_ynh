@@ -31,6 +31,9 @@ is_public=$YNH_APP_ARG_IS_PUBLIC
 language=$YNH_APP_ARG_LANGUAGE
 password=$YNH_APP_ARG_PASSWORD
 
+use_Tor=$schleuder_gpg_use_tor
+
+
 ### If it's a multi-instance app, meaning it can be installed several times independently
 ### The id of the app as stated in the manifest is available as $YNH_APP_ID
 ### The instance number is available as $YNH_APP_INSTANCE_NUMBER (equals "1", "2", ...)

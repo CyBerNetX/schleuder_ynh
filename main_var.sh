@@ -36,9 +36,9 @@ export schleuder_schleuder_web_environment_vars_path="/etc/default/schleuder-web
 export schleuder_schleuder_web_allow_access_from_outside="True"
 
 ### schleuder-gitlab-ticketing-plugin vars:
-export schleuder_gitlab_plugin_path="/opt/local/gitlab-ticketing"
-export schleuder_gitlab_plugin_repo="https://0xacab.org/schleuder/schleuder-gitlab-ticketing"
-export schleuder_gitlab_plugin_git_update="False"
+#export schleuder_gitlab_plugin_path="/opt/local/gitlab-ticketing"
+#export schleuder_gitlab_plugin_repo="https://0xacab.org/schleuder/schleuder-gitlab-ticketing"
+#export schleuder_gitlab_plugin_git_update="False"
 
 ### schleuder-cli vars:
 export schleuder_cli_path="/admin/.schleuder-cli"
@@ -91,7 +91,7 @@ export schleuder_receive_admin_only="false"
 export schleuder_headers_to_meta=("from" "to" "cc" "date" "sig" "enc")
 export schleuder_keep_msgid="true"
 export schleuder_keywords_admin_only=("subscribe" "unsubscribe" "delete-key" )
-export chleuder_keywords_admin_notify=("add-key")
+export schleuder_keywords_admin_notify=("add-key")
 export schleuder_internal_footer=""
 export schleuder_public_footer=""
 export schleuder_subject_prefix=""
