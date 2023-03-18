@@ -1,6 +1,0 @@
-SOURCE_URL=https://0xacab.org/schleuder/schleuder-web/-/archive/master/schleuder-web-master.tar.gz
-SOURCE_SUM=ec18e10bc92f8405c534fb0568509d7fdd4de400491140b500df58d7e3797895
-SOURCE_SUM_PRG=sha256sum
-SOURCE_FORMAT=tar.gz
-SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=schleuder-web-master.tar.gz
