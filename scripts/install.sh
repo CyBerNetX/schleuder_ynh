@@ -50,6 +50,9 @@ SCHLEUDER_WEB_SERVICE="/etc/systemd/system/schleuder-web.service"
 SCHLEUDER_API_HOST="127.0.0.1"
 SCHLEUDER_API_PORT="4443"
 
+domain=ynhdev.local
+listsdomain=schleuder.ynhdev.local
+
 apt-get update && apt-get upgrade -y
 echo -e "${Red} Installation des applications ${NORMAL}"
 apt-get install -y schleuder 
@@ -93,10 +96,10 @@ AOF
 
 
 [[ ! -e /etc/postfix/virtual_aliases ]] && cat <<BOF |sudo tee -a /etc/postfix/virtual_aliases 
-postmaster@lists.example.org    root@anotherdomain
-abuse@lists.example.org         root@anotherdomain
-MAILER-DAEMON@lists.example.org root@anotherdomain
-root@lists.example.org          root@anotherdomain
+postmaster@$listsdomain    root@$domain
+abuse@$listsdomain         root@$domain
+MAILER-DAEMON@$listsdomain root@$domain
+root@$listsdomain          root@$domain
 BOF
 
 systemctl restart postfix
