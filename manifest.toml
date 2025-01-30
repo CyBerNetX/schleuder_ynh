@@ -1,0 +1,71 @@
+#:schema https://raw.githubusercontent.com/YunoHost/apps/master/schemas/manifest.v2.schema.json
+
+packaging_format = 2
+
+id = "schleuderweb"
+name = "Schleuder-web"
+
+description.en = "A web-interface to manage Schleuder, an encrypting mailing list manager with remailing-capabilities."
+description.fr = "Une interface web pour gérer Schleuder, un gestionnaire de listes de diffusion cryptées avec des capacités de remailing."
+
+version = "0.1~ynh1"
+
+maintainers = ["CyBerNetX"]
+
+[upstream]
+license = "GPL v3"
+website = "https://schleuder.org/schleuder-web/"
+
+admindoc = "https://schleuder.org/schleuder/docs/list-admins.html"
+userdoc = "https://schleuder.org/schleuder/docs/subscribers.html"
+code = "https://0xacab.org/schleuder/schleuder-web.git"
+
+[integration]
+yunohost = '>= 11.2.30'
+helpers_version = "2.1"
+# List of supported archs using the dpkg --print-architecture nomenclature (amd64/i386/armhf/arm64), for example: ["amd64", "i386']
+architectures = "all" 
+multi_instance = false
+ldap = "false" 
+sso = "false"
+disk = "50M"
+ram.build = "50M"
+ram.runtime = "50M"
+
+[install]
+
+    [install.domain]
+    # this is a generic question - ask strings are automatically handled by YunoHost's core
+    type = "domain"
+
+    [install.init_main_permission]
+    # this is a generic question - ask strings are automatically handled by YunoHost's core
+    # This won't be saved as setting and will instead be used to initialize the SSOwat permission
+    type = "group"
+    default = "visitors"
+
+[resources]
+    # See the packaging documentation for the full set
+    # of explanation regarding the behavior and properties for each of those
+    # https://yunohost.org/packaging_apps_resources
+
+    [resources.sources]
+
+        [resources.sources.main]
+        url = "https://0xacab.org/schleuder/schleuder-web.git"
+        sha256 = "7227607b25782aa24a3926f121761518e89dfd5c500bb36d1ea20b1af7b710d9"
+
+        # You might want to add an "autoupdate strategy" setting to that your app receive automated pull request with each new update, which also trigger automated testing.
+        # autoupdate.strategy = ""
+
+    [resources.permissions]
+    # This will configure SSOwat permission for $domain/$path/
+    # The initial allowed group of user is configured via the init_main_permission question (public=visitors, private=all_users)
+    main.url = "/"
+
+    [resources.ports]
+    # This will pick a random port for reverse-proxying and store it as the $port setting
+    [resources.apt]
+    # This will automatically install/uninstall the following apt packages
+    # and implicitly define the $php_version setting as 8.3 (if php8.3-foobar dependencies are listed)
+    packages = "schleuder "

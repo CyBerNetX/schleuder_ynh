@@ -1,137 +1,88 @@
-
 #!/bin/bash
+### App file generated with YoloGen, the YunoHost app generator, version .
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
+# This is the tutorial version of the app.
+# It contains extra commands to explain what should be done in case you want to adjust some part of the script.
+# Once you are done, you may remove them.
 
+source _common.sh
 source /usr/share/yunohost/helpers
 
-#=================================================
-# LOAD SETTINGS
-#=================================================
+### Settings are automatically loaded as bash variables
+### in every app script context, therefore typically these will exist:
+### - $domain
+### - $path
+### - $language
+### - $install_dir
+### - $port
+### ...
 
-# Retrieve arguments
-app=$YNH_APP_INSTANCE_NAME
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-path_url=$(ynh_app_setting_get --app=$app --key=path)
-redirect_type=$(ynh_app_setting_get --app=$app --key=redirect_type)
-redirect_path=$(ynh_app_setting_get --app=$app --key=redirect_path)
+### In the context of upgrade,
+### - resources are automatically provisioned / updated / deleted (depending on existing resources)
+### - a safety backup is automatically created by the core and will be restored if the upgrade fails
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
+#ynh_script_progression "Ensuring downward compatibility..."
 
-# Fix is_public as a boolean value
-# Default value for redirect_type if upgrading from https://github.com/scith/redirect_ynh
-if [ -z "$redirect_type" ];
-then
-    redirect_type="proxy"
-    ynh_app_setting_set $app 'redirect_type' $redirect_type
-fi
+### N.B. : the following setting migration snippets are provided as *EXAMPLES*
+### of what you may want to do in some cases (e.g. a setting was not defined on
+### some legacy installs and you therefore want to initiaze stuff during upgrade)
 
-# Migrate away from old stuff with 'is_public' and old redirect type names
-is_public=$(ynh_app_setting_get "$app" is_public)
-if [ -n "$is_public" ]
-then
-    if [ "$is_public" = "Yes" ]; then
-        is_public=1
-    elif [ "$is_public" = "No" ]; then
-        is_public=0
-    fi
+# If db_name doesn't exist, create it
+# ynh_app_setting_set_default --key=db_name --value="$(ynh_sanitize_dbid --db_name=$app)"
 
-    if [ "$is_public" = "0" ] && [ "$redirect_type" != "proxy" ]; then
-       echo "WARNING: You previously had a 'supposedly' private 301 or 302 redirection... but it was found that it was public all along and it is not easy to create such a private redirection. Your 301 or 302 redirection will be re-flagged as public..." >&2
-       is_public=1
-    fi
-
-    if [ "$redirect_type" == "proxy" ] && [ "$is_public" = "1" ]
-    then
-        redirect_type="public_proxy"
-    elif [ "$redirect_type" == "proxy" ] && [ "$is_public" = "0" ]
-    then
-        redirect_type="private_proxy"
-    elif [ "$redirect_type" == "visible_302" ]
-    then
-        redirect_type="public_302"
-    elif [ "$redirect_type" == "visible_301" ]
-    then
-        redirect_type="public_301"
-    fi
-    
-    ynh_app_setting_set $app 'redirect_type' $redirect_type
-fi
-
-# Migrate legacy permissions to new system
-if ynh_legacy_permissions_exists
-then
-    ynh_legacy_permissions_delete_all
-
-    ynh_app_setting_delete --app=$app --key=is_public
-fi
+# If install_dir doesn't exist, create it
+# ynh_app_setting_set_default --key=install_dir --value="/var/www/$app"
 
 #=================================================
-# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+# STOP SYSTEMD SERVICE
 #=================================================
+ynh_script_progression "Stopping a systemd service..."
 
-# Backup the current version of the app
-ynh_backup_before_upgrade
-ynh_clean_setup () {
-	# restore it if the upgrade fails
-	ynh_restore_upgradebackup
-}
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
-
-# Validate redirect path
-url_regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
-[[ ! $redirect_path =~ $url_regex ]] && ynh_die "Invalid destination: $redirect_path" 1
+ynh_systemctl --service="$app" --action="stop"
 
 #=================================================
-# CONFIGURE NGINX
+# INSTALL DEPENDENCIES
 #=================================================
-
-# Nginx configuration
-for FILE in $(ls ../conf/nginx-*.conf)
-do
-    ynh_replace_string "YNH_LOCATION" "$path_url" $FILE
-done
-if [ "$redirect_type" = "public_302" ];
-then
-    ynh_replace_string "YNH_REDIRECT_PATH" "$redirect_path" ../conf/nginx-visible-302.conf
-    cp ../conf/nginx-visible-302.conf /etc/nginx/conf.d/$domain.d/$app.conf
-elif [ "$redirect_type" = "public_301" ];
-then
-    ynh_replace_string "YNH_REDIRECT_PATH" "$redirect_path" ../conf/nginx-visible-301.conf
-    cp ../conf/nginx-visible-301.conf /etc/nginx/conf.d/$domain.d/$app.conf
-elif [ "$redirect_type" = "public_proxy" ] || [ "$redirect_type" = "private_proxy" ];
-then
-    ynh_replace_string "YNH_REDIRECT_PATH" "$redirect_path" ../conf/nginx-proxy.conf
-    cp ../conf/nginx-proxy.conf /etc/nginx/conf.d/$domain.d/$app.conf
-fi
+ynh_script_progression "Installing dependencies..."
 
 #=================================================
-# CONFIGURE SSOWAT
+# DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_script_progression --message="Upgrading source files..."
 
-# Make app public if necessary
-if [ "$redirect_type" != "private_proxy" ]
-then
-	# unprotected_uris allows SSO credentials to be passed anyway.
-	ynh_permission_update --permission="main" --add="visitors"
-fi
+ynh_setup_source --dest_dir="$install_dir" --full_replace --keep=""
+
+# $install_dir will automatically be initialized with some decent
+# permission by default... however, you may need to recursively reapply
+# ownership to all files such as after the ynh_setup_source step
+
+chown -R $app:www-data "$install_dir"
 
 #=================================================
-# RELOAD NGINX
+# REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server..." --weight=1
+ynh_script_progression "Upgrading system configurations related to $app..."
 
-ynh_systemd_action --service_name=nginx --action=reload
+# This should be a literal copypasta of what happened in the install's "System configuration" section
+
+ynh_config_add_nginx
+
+ynh_config_add_systemd
+
+yunohost service add "$app" --description="A short description of the app" --log="/var/log/$app/$app.log"
+
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_script_progression "Starting a systemd service..."
+
+ynh_systemctl --service="$app" --action="start"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Upgrade of $app completed" --last
+ynh_script_progression "Upgrade of $app completed"

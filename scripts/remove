@@ -1,38 +1,46 @@
 #!/bin/bash
+### App file generated with YoloGen, the YunoHost app generator, version .
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
+# This is the tutorial version of the app.
+# It contains extra commands to explain what should be done in case you want to adjust some part of the script.
+# Once you are done, you may remove them.
 
+source _common.sh
 source /usr/share/yunohost/helpers
 
-#=================================================
-# LOAD SETTINGS
-#=================================================
-ynh_script_progression --message="Loading installation settings..." --weight=1
+### Settings are automatically loaded as bash variables
+### in every app script context, therefore typically these will exist:
+### - $domain
+### - $path
+### - $language
+### - $install_dir
+### - $port
+### ...
 
-# Retrieve arguments
-app=$YNH_APP_INSTANCE_NAME
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-
-#=================================================
-# REMOVE NGINX CONFIGURATION
-#=================================================
-
-# Remove configuration files
-ynh_secure_remove /etc/nginx/conf.d/$domain.d/$app.conf
+### For remove operations:
+### - the core will deprovision every resource defined in the manifest **after** this script is ran
+### this includes removing the install directory, and data directory (if --purge was used)
 
 #=================================================
-# RELOAD NGINX AND PHP-FPM
+# REMOVE SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server..." --weight=1
+ynh_script_progression "Removing system configurations related to $app..."
 
-ynh_systemd_action --service_name=nginx --action=reload
+# This should be a symetric version of what happens in the install script
+
+# Remove the service from the list of services known by YunoHost (added from `yunohost service add`)
+if ynh_hide_warnings yunohost service status $app >/dev/null; then
+	yunohost service remove $app
+fi
+
+ynh_config_remove_systemd
+
+ynh_config_remove_nginx
+
+# Remove other various files specific to the app... such as:
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Removal of $app completed" --last
+ynh_script_progression "Removal of $app completed"

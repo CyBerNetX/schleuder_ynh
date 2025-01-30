@@ -1,62 +1,52 @@
 #!/bin/bash
+### App file generated with YoloGen, the YunoHost app generator, version .
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
+# This is the tutorial version of the app.
+# It contains extra commands to explain what should be done in case you want to adjust some part of the script.
+# Once you are done, you may remove them.
 
+source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# MANAGE SCRIPT FAILURE
+# RESTORE SYSTEM CONFIGURATIONS
 #=================================================
+ynh_script_progression "Restoring system configurations related to $app..."
 
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
+### This should be a symetric version of what happens in the install script
 
-#=================================================
-# LOAD SETTINGS
-#=================================================
+ynh_restore "/etc/nginx/conf.d/$domain.d/$app.conf"
 
-# Retrieve arguments
-app=$YNH_APP_INSTANCE_NAME
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-path_url=$(ynh_app_setting_get --app=$app --key=path)
-redirect_type=$(ynh_app_setting_get --app=$app --key=redirect_type)
-redirect_path=$(ynh_app_setting_get --app=$app --key=redirect_path)
+ynh_restore "/etc/systemd/system/$app.service"
+systemctl enable "$app.service" --quiet
 
-# Validate redirect path
-url_regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
-[[ ! $redirect_path =~ $url_regex ]] && ynh_die "Invalid destination: $redirect_path" 1
-
-# Check configuration files
-NGINX_CONF="/etc/nginx/conf.d/${domain}.d/${app}.conf"
-[[ -f $NGINX_CONF ]] && ynh_die "The NGINX configuration already exists at '${NGINX_CONF}'. You should safely delete it before restoring this app."
-
-# Restore configuration files
-ynh_restore_file "$NGINX_CONF"
+yunohost service add "$app" --description="A short description of the app" --log="/var/log/$app/$app.log"
 
 #=================================================
-# SETUP SSOWAT
+# RESTORE VARIOUS FILES
 #=================================================
 
-# Make app public if necessary
-if [ "$redirect_type" != "private_proxy" ]
-then
-	# unprotected_uris allows SSO credentials to be passed anyway.
-	ynh_permission_update --permission="main" --add="visitors"
-fi
+### For apps with huge logs, you might want to not backup logs every time:
+### The mkdir call is just here in case the log directory was not backed up.
+### mkdir -p "/var/log/$app"
+### chown $app:www-data "/var/log/$app"
+### ynh_restore_file --src_path="/var/log/$app/" --not_mandatory
+###
+### For other apps, the simple way is better:
+
+ynh_restore "/var/log/$app/"
 
 #=================================================
-# RELOAD NGINX AND PHP-FPM
+# RELOAD NGINX AND PHP-FPM OR THE APP SERVICE
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server..." --weight=1
+ynh_script_progression "Reloading NGINX web server and $app's service..."
 
-ynh_systemd_action --service_name=nginx --action=reload
+ynh_systemctl --service="$app" --action="start"
+
+ynh_systemctl --service=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Restoration completed for $app" --last
+ynh_script_progression "Restoration completed for $app"
