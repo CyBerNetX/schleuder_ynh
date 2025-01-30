@@ -53,7 +53,7 @@ ram.runtime = "50M"
 
         [resources.sources.main]
         url = "https://0xacab.org/schleuder/schleuder-web.git"
-        sha256 = "7227607b25782aa24a3926f121761518e89dfd5c500bb36d1ea20b1af7b710d9"
+        #sha256 = "7227607b25782aa24a3926f121761518e89dfd5c500bb36d1ea20b1af7b710d9"
 
         # You might want to add an "autoupdate strategy" setting to that your app receive automated pull request with each new update, which also trigger automated testing.
         # autoupdate.strategy = ""
