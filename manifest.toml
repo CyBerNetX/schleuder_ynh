@@ -52,8 +52,8 @@ ram.runtime = "50M"
     [resources.sources]
 
         [resources.sources.main]
-        url = "https://0xacab.org/schleuder/schleuder-web.git"
-        sha256 = "2bb5bdd035a58a3db7484be8e15cf5f28876b40c1701ef4adb3240dc6b6fea92"
+        url = "https://0xacab.org/schleuder/schleuder-web/-/tree/debian/bookworm"
+        sha256 = "d2b153eb81095fbe52a8fdcc548a6f928af8ebba"
         
 	# You might want to add an "autoupdate strategy" setting to that your app receive automated pull request with each new update, which also trigger automated testing.
         # autoupdate.strategy = ""
